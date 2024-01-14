@@ -80,3 +80,40 @@ status:
 - `metadata`- metadata about the deployment, like when it was created, its name and its ID.
 - `spec`- desired state of the deployment. Most impactful edits, like how many replicas you want, will be made here.
 - `status`- current state of the deployment. You wont edit this directly, its just for you to see whats' going on with your deployment.
+
+### Deploying another service (ChatAPI Service)
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synergychat-api
+spec:
+  selector:
+    matchLabels:
+      app: synergychat-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: synergychat-api
+    spec:
+      containers:
+        - name: synergychat-api
+          image: lanecwagner/synergychat-api:latest
+```
+
+### THRASHING PODS
+
+> Pods keeps crashing and restarting. This is called **THRASHING**
+
+- The applications recently had a bug introduced in the latest image version.
+- The application is misconfigured and can't start properly
+- The dependency of the application is misconfigured and the application can't start properly
+- The application is trying to use too much memory and is bring killed by Kubernetes.
+
+### CRASHLOOPSBACKOFF
+
+> When a pods' status is **CrashLoopBackOff**, that means the container is crashing (the program is exiting with error code 1).
+
+- Because k8s is all about building self-healing systemf, it will automatically retart the container. However, _each time it tries to restart the container, if it crashes again, it will wait longer and longer in between restarts_. That's why it's called **_backoff_**
